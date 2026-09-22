@@ -23,6 +23,18 @@ To use them in only one repository, copy the two directories to `<repository>\.a
 
 Invoke them with `$wrap-up` and `$resume-work`, or describe the corresponding task. If Codex does not detect a newly installed skill, restart Codex.
 
+## Install on macOS
+
+For your user account, run in Terminal:
+
+```sh
+git clone https://github.com/mm-arturo/codex-session-skills.git
+mkdir -p "$HOME/.agents/skills"
+cp -R codex-session-skills/skills/resume-work codex-session-skills/skills/wrap-up "$HOME/.agents/skills/"
+```
+
+To use them in only one repository, copy the two directories to `<repository>/.agents/skills/` instead. Review the skill instructions and adapt the persistence files and approval rules to your project. The skill procedures currently include Windows/PowerShell-specific steps; adapt those steps for macOS before running them.
+
 ## How the pair works
 
 `wrap-up` separates durable rules from temporary session state: `AGENTS.md` holds concise standing instructions, `AGENT_LEARNINGS.md` or a project's existing ledger holds verified evidence, and `HANDOFF.md` records the current checkpoint. It checks the exact files before a commit and push. It does not silently discard changes or force-push.
@@ -38,3 +50,4 @@ The companion [Claude Code session skills](https://github.com/mm-arturo/claude-c
 ## Contributor and license
 
 Contributor: [mm-arturo](https://github.com/mm-arturo). MIT licensed; see [LICENSE](LICENSE).
+
