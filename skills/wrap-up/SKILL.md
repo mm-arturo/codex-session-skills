@@ -130,6 +130,25 @@ conditions under which it should not be retried.
 ## 3. Route each lesson to the correct durable layer
 
 Use the narrowest authoritative destination that will reliably be loaded later.
+Choose the first home in this order that fits. The always-loaded instruction
+files come last on purpose: every byte in them is paid for in every session,
+and Codex stops adding project `AGENTS.md` files once their combined size
+reaches `project_doc_max_bytes` (32 KiB by default), so guidance past that
+point is silently dropped.
+
+1. The skill that runs that work (see "Existing skill improvement"). This is
+   the default.
+2. A project or global learning ledger, for evidence, cases and dates.
+3. `HANDOFF.md`, for anything that is only true today.
+4. A new skill, only with the user's approval.
+5. A project or global `AGENTS.md`, only for a hard safety line or a rule that
+   most sessions in that scope would hit with no earlier moment to load a
+   skill. Then write it twice: the full lesson in its home from 1-2, and one
+   imperative line of at most 200 characters in `AGENTS.md` that names that
+   home.
+
+A date, an incident story, a file count or an ID never goes into `AGENTS.md`;
+it goes into the ledger or skill that the `AGENTS.md` line points to.
 
 ### Project standing rule
 
@@ -155,7 +174,7 @@ Prefer the existing canonical file when one exists.
 
 Use this entry format:
 
-    ## YYYY-MM-DD â€” Short title
+    ## YYYY-MM-DD — Short title
     - Status: verified | conditional
     - Scope:
     - Lesson:
@@ -222,6 +241,13 @@ it.
 Put only temporary continuity information in `HANDOFF.md`. Do not use a handoff
 as the sole storage location for a durable rule.
 
+### Retire stale rules
+
+Nothing is deleted; it is moved. For every `AGENTS.md` line this session proved
+stale (a status such as "queued" or "pending", a default that changed, a script
+or account fact that is no longer true), correct the line and move the old
+text, with its date, to the history part of its ledger or skill.
+
 ## 4. Verify persistent edits before committing
 
 For every file changed during the persistence pass:
@@ -242,6 +268,25 @@ List every persistent change with:
 - whether it is repo-backed, globally local, or pending permission.
 
 If nothing passes the quality bar, say so and do not manufacture a lesson.
+
+### Measure the always-loaded files
+
+Count the characters of the global `AGENTS.md` and of every project `AGENTS.md`
+in the chain before and after the persistence pass, for example
+`(Get-Content -Raw -Encoding UTF8 <file>).Length`. Set a target per file and
+treat it as a target, not a ceiling: with the 32 KiB default, keep the combined
+project chain under about 24 KiB so there is room to grow.
+
+- A file that ends the session larger than it started needs a reason in the
+  report.
+- When a file is over its target, move its incident detail (stories, dates,
+  evidence) to the matching ledger or skill without asking, and keep each
+  one-line rule in place.
+- Moving or removing a one-line rule, a user ruling or a safety line out of an
+  always-loaded file needs the user's approval. List such proposals in the
+  report.
+- Never delete knowledge to save space. Move it, and confirm that the moved
+  text is in its new home word for word.
 
 ## 5. Write `HANDOFF.md` before the commit
 
@@ -265,6 +310,8 @@ Use an ISO-8601 timestamp with timezone and include:
   resume;
 - intentionally uncommitted files and why;
 - standing rules, learning ledgers, and skills changed during the session;
+- the character count of each always-loaded instruction file before and after
+  this session;
 - SHA-256 hashes for each changed global instruction or global skill file;
 - whether global files are version-controlled or only stored locally.
 
@@ -311,6 +358,8 @@ Create a descriptive commit for the meaningful session state.
 
 - Use `wip:` when the work is incomplete or checks fail.
 - Do not rewrite existing commits merely to make the history prettier.
+- Commit rules moved between instruction files, skills and ledgers as their
+  own commit, so one revert undoes the move.
 - If global configuration files are maintained in a separate Git repository,
   commit and push them separately with an appropriate message.
 - If global files are not version-controlled, preserve timestamped backups and
@@ -342,6 +391,7 @@ Finish with:
 - push result;
 - test/check summary;
 - exact persistent files changed and why;
+- before and after character counts of the always-loaded instruction files;
 - global changes and whether they have remote backup;
 - remaining risks or author decisions;
 - exact resume command:

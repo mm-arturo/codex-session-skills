@@ -39,6 +39,8 @@ To use them in only one repository, copy the two directories to `<repository>/.a
 
 `wrap-up` separates durable rules from temporary session state: `AGENTS.md` holds concise standing instructions, `AGENT_LEARNINGS.md` or a project's existing ledger holds verified evidence, and `HANDOFF.md` records the current checkpoint. It checks the exact files before a commit and push. It does not silently discard changes or force-push.
 
+To keep `AGENTS.md` from growing until Codex truncates it, `wrap-up` sends each lesson to the skill or ledger for that work first and to `AGENTS.md` last, as one short line that points to the full lesson. It corrects stale lines instead of adding new ones, and reports the size of the always-loaded files at every wrap-up. It moves knowledge between files but never deletes it to save space.
+
 `resume-work` reads the handoff and applicable instructions, then checks branch, commits, working tree, and recorded hashes. If the handoff is stale, the current repository state wins. It reports remaining work and starts only a safe, unambiguous next step.
 
 These procedures do not replace your project's own rules. In particular, publication, external writes, backup destinations, and subagent use remain subject to the instructions active in your Codex session.
